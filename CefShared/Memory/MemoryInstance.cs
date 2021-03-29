@@ -100,5 +100,16 @@ namespace CefShared.Memory
 
             return events.ToArray();
         }
+
+        public void WriteEvent(CefEvent cefEvent)
+        {
+            byte[] eventBuffer = cefEvent.Serialize();
+            byte[] eventIDBuffer = new byte[4];
+
+            BitConverter.GetBytes(cefEvent.GetEventID());
+
+            _sharedBuffer.Write(eventIDBuffer);
+            _sharedBuffer.Write(eventBuffer);
+        }
     }
 }

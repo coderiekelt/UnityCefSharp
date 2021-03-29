@@ -13,6 +13,11 @@ namespace CefShared
             _writeBuffer = new List<byte[]>();
         }
 
+        public virtual int GetEventID()
+        {
+            return -1;
+        }
+
         public virtual byte[] Serialize()
         {
             return new byte[0];
