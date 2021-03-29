@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CefServer": {
+      "commandName": "Project",
+      "commandLineArgs": "test"
+    }
+  }
+}
