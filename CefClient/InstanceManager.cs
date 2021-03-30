@@ -20,7 +20,7 @@ namespace CefClient
 
         public int EventServerPort;
 
-        void Awake()
+        public void Initialize()
         {
             if (_instance != null && _instance != this)
             {

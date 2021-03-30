@@ -35,6 +35,7 @@ namespace CefServer
 
             CefSettings settings = new CefSettings();
             CefSharpSettings.ShutdownOnExit = true;
+            settings.CefCommandLineArgs.Remove("mute-audio");
             Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
 
             while (true)
