@@ -86,7 +86,6 @@ namespace CefServer.Chromium
                 CefKeyboardEvent cefKeyboardEvent = (CefKeyboardEvent)cefEvent;
 
                 // handle
-                _browser.GetBrowser().GetHost().
 
                 return;
             }
