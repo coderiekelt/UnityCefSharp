@@ -85,4 +85,7 @@
     <Error Condition="!Exists('..\packages\CefSharp.Common.88.2.90\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.88.2.90\build\CefSharp.Common.targets'))" />
   </Target>
   <Import Project="..\packages\CefSharp.Common.88.2.90\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.88.2.90\build\CefSharp.Common.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>$(SolutionDir)\PostBuildServer.bat $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

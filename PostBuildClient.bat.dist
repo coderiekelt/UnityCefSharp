@@ -1,0 +1,9 @@
+@echo off
+rem Set this to your plugins dir, or wherever you want the DLLs to live
+set targetDir=<Your Unity Project>\Plugins\
+
+echo "%1*.dll"
+echo "%targetDir%"
+
+xcopy "%1*.dll" "%targetDir%" /q /y
+del %targetDir%UnityEngine.dll

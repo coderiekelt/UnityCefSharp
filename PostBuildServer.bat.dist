@@ -1,0 +1,9 @@
+@echo off
+rem Set this to a directory in your project, wherever you want CefServer to live
+set targetDir=<Your Unity Project>\CefServer\
+
+echo "%1*"
+echo "%targetDir%"
+
+xcopy "%1*" "%targetDir%" /q /y /e/h /c /i
+del "%targetDir%*.pdb"
