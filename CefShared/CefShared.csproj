@@ -51,6 +51,8 @@
     <Compile Include="CefEvent.cs" />
     <Compile Include="EventRegistry.cs" />
     <Compile Include="Event\CefCreateInstanceEvent.cs" />
+    <Compile Include="Event\CefMouseEvent.cs" />
+    <Compile Include="Event\CefKeyboardEvent.cs" />
     <Compile Include="Event\CefInstanceCreatedEvent.cs" />
     <Compile Include="Event\CefNavigateEvent.cs" />
     <Compile Include="Memory\MemoryInstance.cs" />

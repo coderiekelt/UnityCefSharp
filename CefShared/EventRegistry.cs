@@ -12,13 +12,17 @@ namespace CefShared
 
         public static void BuildDictionary()
         {
+            // TODO: Reflection
             EventDictionary.Add(1000, "CefShared.Event.CefCreateInstanceEvent");
             EventDictionary.Add(1001, "CefShared.Event.CefInstanceCreatedEvent");
+            EventDictionary.Add(2000, "CefShared.Event.CefKeyboardEvent");
+            EventDictionary.Add(2001, "CefShared.Event.CefMouseEvent");
         }
 
         public static CefEvent CreateByID(int id)
         {
-            CefEvent cefEvent = (CefEvent) Activator.CreateInstance(Type.GetType(EventDictionary[id]));
+            string eventType = EventDictionary[id];
+            CefEvent cefEvent = (CefEvent) Activator.CreateInstance(Type.GetType(eventType));
 
             return cefEvent;
         }

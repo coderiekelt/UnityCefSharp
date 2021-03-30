@@ -12,6 +12,7 @@ namespace CefServer.Chromium
     {
         private Thread _thread;
         private ChromiumWebBrowser _browser;
+        private CefRenderHandler _renderHandler;
 
         public string InstanceID;
 
@@ -21,6 +22,7 @@ namespace CefServer.Chromium
 
         public int Width;
         public int Height;
+        public string Url;
 
         public CefInstance()
         {
@@ -45,9 +47,49 @@ namespace CefServer.Chromium
 
         public void ReceiveEvent(CefEvent cefEvent)
         {
-            Console.WriteLine("Received event {0} on instance {1}", cefEvent.ToString(), InstanceID);
+            if (cefEvent is CefMouseEvent)
+            {
+                CefMouseEvent cefMouseEvent = (CefMouseEvent)cefEvent;
 
-            
+                if (cefMouseEvent.MouseButton != -1)
+                {
+                    MouseButtonType pressedButton;
+
+                    switch (cefMouseEvent.MouseButton)
+                    {
+                        case 0:
+                            pressedButton = MouseButtonType.Left;
+                            break;
+                        case 1:
+                            pressedButton = MouseButtonType.Right;
+                            break;
+                        case 2:
+                            pressedButton = MouseButtonType.Middle;
+                            break;
+                        default:
+                            pressedButton = MouseButtonType.Left;
+                            break;
+                    }
+
+                    _browser.GetBrowser().GetHost().SendMouseClickEvent(new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, CefEventFlags.None), pressedButton, !cefMouseEvent.MouseButtonDown, 1);
+
+                    return;
+                }
+
+                _browser.GetBrowser().GetHost().SendMouseMoveEvent(new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, CefEventFlags.None), false);
+
+                return;
+            }
+
+            if (cefEvent is CefKeyboardEvent)
+            {
+                CefKeyboardEvent cefKeyboardEvent = (CefKeyboardEvent)cefEvent;
+
+                // handle
+                _browser.GetBrowser().GetHost().
+
+                return;
+            }
         }
 
         private void Run()
@@ -62,14 +104,16 @@ namespace CefServer.Chromium
             _eventOutMemory.Init(1);
 
             _browser = new ChromiumWebBrowser();
-            _browser.RenderHandler = new CefRenderHandler(_gfxMemory, Width, Height);
+            _renderHandler = new CefRenderHandler(_gfxMemory, Width, Height);
+
+            _browser.RenderHandler = _renderHandler;
 
             _browser.BrowserInitialized += BrowserInitialized;
         }
 
         private void BrowserInitialized(object sender, EventArgs e)
         {
-            _browser.Load("https://www.google.com/");
+            _browser.Load(Url);
             Console.WriteLine("Initialized instance {0}", InstanceID);
             Program.SendEvent(new CefInstanceCreatedEvent() { InstanceID = InstanceID });
         }

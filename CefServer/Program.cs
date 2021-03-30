@@ -24,9 +24,9 @@ namespace CefServer
                 return;
             }
 
-            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
-
             EventRegistry.BuildDictionary();
+
+            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 
             _eventServer = new EventServer(Int32.Parse(args[0]));
             _eventServer.OnEventReceived += EventReceivedHandler;
@@ -56,6 +56,7 @@ namespace CefServer
 
                 cefInstance.Width = createEvent.Width;
                 cefInstance.Height = createEvent.Height;
+                cefInstance.Url = createEvent.Url;
 
                 cefInstance.Start();
 
