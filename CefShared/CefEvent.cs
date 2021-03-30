@@ -82,7 +82,7 @@ namespace CefShared
             byte[] buffer = new byte[4];
             stream.Read(buffer, 0, 4);
 
-            return BitConverter.ToInt32(buffer);
+            return BitConverter.ToInt32(buffer, 0);
         }
     }
 }

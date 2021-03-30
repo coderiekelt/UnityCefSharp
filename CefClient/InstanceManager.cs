@@ -19,6 +19,8 @@ namespace CefClient
         private MemoryInstance _eventInMemory;
         private MemoryInstance _eventOutMemory;
 
+        public string InstanceID;
+
         void Awake()
         {
             if (_instance != null && _instance != this)
@@ -30,10 +32,10 @@ namespace CefClient
 
             _instance = this;
 
-            _eventInMemory = new MemoryInstance("unitycefsharp_event_in");
+            _eventInMemory = new MemoryInstance(InstanceID + "_event_in");
             _eventInMemory.Connect();
 
-            _eventOutMemory = new MemoryInstance("unitycefsharp_event_out");
+            _eventOutMemory = new MemoryInstance(InstanceID + "_event_out");
             _eventOutMemory.Connect();
 
             _cefInstances = new Dictionary<string, CefInstance>();
@@ -58,7 +60,8 @@ namespace CefClient
 
         public CefInstance CreateCefInstance(int width, int height, string url)
         {
-            CefInstance instance = new CefInstance(Guid.NewGuid().ToString());
+            CefInstance instance = gameObject.AddComponent<CefInstance>();
+            instance.InstanceID = Guid.NewGuid().ToString();
             _cefInstances[instance.InstanceID] = instance;
 
             instance.name = instance.InstanceID;
@@ -71,6 +74,7 @@ namespace CefClient
 
         public void SendEvent(CefEvent cefEvent)
         {
+            Debug.Log("Sending event " + cefEvent);
             _eventInMemory.WriteEvent(cefEvent);
         }
     }

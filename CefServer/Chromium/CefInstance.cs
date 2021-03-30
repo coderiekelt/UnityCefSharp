@@ -36,6 +36,8 @@ namespace CefServer.Chromium
 
         public string Start()
         {
+            Console.WriteLine("Starting instance {0}", InstanceID);
+
             _thread.Start();
 
             return InstanceID;
@@ -54,10 +56,10 @@ namespace CefServer.Chromium
             _gfxMemory.Init(Width * Height * 4);
 
             _eventInMemory = new MemoryInstance(InstanceID + "_event_in");
-            _eventInMemory.Init(0);
+            _eventInMemory.Init(1);
 
             _eventOutMemory = new MemoryInstance(InstanceID + "_event_out");
-            _eventOutMemory.Init(0);
+            _eventOutMemory.Init(1);
 
             _browser = new ChromiumWebBrowser();
             _browser.RenderHandler = new CefRenderHandler(_gfxMemory, Width, Height);
@@ -68,6 +70,7 @@ namespace CefServer.Chromium
         private void BrowserInitialized(object sender, EventArgs e)
         {
             _browser.Load("https://www.google.com/");
+            Console.WriteLine("Initialized instance {0}", InstanceID);
             Program.SendEvent(new CefInstanceCreatedEvent() { InstanceID = InstanceID });
         }
     }

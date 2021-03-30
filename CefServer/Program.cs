@@ -1,8 +1,6 @@
 ﻿using CefSharp;
 using CefSharp.OffScreen;
 using System;
-using System.Collections.Generic;
-using SharedMemory;
 using CefShared.Event;
 using CefShared.Memory;
 using CefShared;
@@ -24,23 +22,15 @@ namespace CefServer
                 return;
             }
 
-            _eventInMemory = new MemoryInstance("unitycefsharp_event_in");
-            _eventInMemory.Init(0);
+            _eventInMemory = new MemoryInstance(args[0] + "_event_in");
+            _eventInMemory.Init(1);
 
-            _eventOutMemory = new MemoryInstance("unitycefsharp_event_out");
-            _eventOutMemory.Init(0);
+            _eventOutMemory = new MemoryInstance(args[0] + "_event_out");
+            _eventOutMemory.Init(1);
 
             CefSettings settings = new CefSettings();
             CefSharpSettings.ShutdownOnExit = true;
             Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
-
-            string ourInstance = InstanceManager.CreateInstance();
-
-            Console.WriteLine("Spawning new instance ({0})", ourInstance);
-
-            InstanceManager.GetInstance(ourInstance).Width = 1920;
-            InstanceManager.GetInstance(ourInstance).Height = 1080;
-            InstanceManager.GetInstance(ourInstance).Start();
 
             while (true)
             {
@@ -48,6 +38,8 @@ namespace CefServer
 
                 foreach (CefEvent cefEvent in cefEvents)
                 {
+                    Console.WriteLine("Received event " + cefEvent);
+
                     if (cefEvent is CefCreateInstanceEvent)
                     {
                         CefCreateInstanceEvent createInstanceEvent = (CefCreateInstanceEvent)cefEvent;

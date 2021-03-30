@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace CefShared.Memory
 {
@@ -60,6 +61,7 @@ namespace CefShared.Memory
             if (_sharedBuffer.Length != size)
             {
                 _sharedBuffer.Close();
+                Thread.Sleep(100);
                 _sharedBuffer = new SharedArray<byte>(_name, size);
             }
         }
@@ -83,6 +85,8 @@ namespace CefShared.Memory
 
         public CefEvent[] ReadEvents()
         {
+            if (!_isOpen) { return new CefEvent[0]; }
+
             List<CefEvent> events = new List<CefEvent>();
             byte[] eventBuffer = ReadBytes();
             MemoryStream bufferStream = new MemoryStream(eventBuffer);
@@ -95,7 +99,7 @@ namespace CefShared.Memory
 
                 bufferPos += bufferStream.Read(eventID, bufferPos, 4);
 
-                int realEventID = Convert.ToInt32(eventID);
+                int realEventID = BitConverter.ToInt32(eventID, 0);
             }
 
             return events.ToArray();
@@ -103,13 +107,15 @@ namespace CefShared.Memory
 
         public void WriteEvent(CefEvent cefEvent)
         {
+            if (!_isOpen) { return; }
+
             byte[] eventBuffer = cefEvent.Serialize();
             byte[] eventIDBuffer = new byte[4];
 
             BitConverter.GetBytes(cefEvent.GetEventID());
 
-            _sharedBuffer.Write(eventIDBuffer);
-            _sharedBuffer.Write(eventBuffer);
+            WriteBytes(eventIDBuffer);
+            WriteBytes(eventBuffer);
         }
     }
 }

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6260E297-D52D-46C3-AB34-636C2E354498}</ProjectGuid>
+    <ProjectGuid>{E2C5A300-1866-43A4-96E3-F38DD5563CD6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CefClient</RootNamespace>
-    <AssemblyName>CefClient</AssemblyName>
+    <RootNamespace>SharedMemory</RootNamespace>
+    <AssemblyName>SharedMemory</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,21 +41,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\UnityEditor\2020.3.1f1\Editor\Data\Managed\UnityEngine.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Chromium\CefInstance.cs" />
-    <Compile Include="InstanceManager.cs" />
+    <Compile Include="BufferWithLocks.cs" />
+    <Compile Include="FastStructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\CefShared\CefShared.csproj">
-      <Project>{11a19bb9-a0af-4f2a-ab52-34c678b232f7}</Project>
-      <Name>CefShared</Name>
-    </ProjectReference>
+    <Compile Include="SharedArray.cs" />
+    <Compile Include="SharedBuffer.cs" />
+    <Compile Include="SharedHeader.cs" />
+    <Compile Include="UnsafeNativeMethods.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

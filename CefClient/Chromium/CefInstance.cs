@@ -22,21 +22,16 @@ namespace CefClient.Chromium
         public Texture2D ViewTexture;
         public bool IsInitialized { get; private set; }
 
-        public CefInstance(string instanceID)
-        {
-            InstanceID = instanceID;
-        }
-
         void Update()
         {
-            CefEvent[] events = _eventOutMemory.ReadEvents();
-
-            // TODO: Handle events
-
             if (!IsInitialized)
             {
                 return;
             }
+
+            CefEvent[] events = _eventOutMemory.ReadEvents();
+
+            // TODO: Handle events
 
             if (_viewTextureBuffer == null)
             {
@@ -55,6 +50,8 @@ namespace CefClient.Chromium
 
         public void Configure(int width, int height, string url)
         {
+            Debug.Log(InstanceID + " configuring");
+
             _width = width;
             _height = height;
             _url = url;
@@ -72,6 +69,8 @@ namespace CefClient.Chromium
 
         public void Initialize()
         {
+            Debug.Log(InstanceID + " initializing");
+
             _gfxMemory = new MemoryInstance(InstanceID + "_gfx");
             _gfxMemory.Connect();
 
@@ -86,6 +85,7 @@ namespace CefClient.Chromium
 
         public void SendEvent(CefEvent cefEvent)
         {
+            Debug.Log("Sent event " + cefEvent);
             _eventInMemory.WriteEvent(cefEvent);
         }
     }
