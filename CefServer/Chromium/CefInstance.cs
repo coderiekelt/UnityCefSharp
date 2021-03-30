@@ -43,7 +43,7 @@ namespace CefServer.Chromium
             return InstanceID;
         }
 
-        public void HandleEvent(CefEvent cefEvent)
+        public void ReceiveEvent(CefEvent cefEvent)
         {
             Console.WriteLine("Received event {0} on instance {1}", cefEvent.ToString(), InstanceID);
 

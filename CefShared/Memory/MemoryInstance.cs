@@ -82,40 +82,5 @@ namespace CefShared.Memory
         {
             return _isOpen;
         }
-
-        public CefEvent[] ReadEvents()
-        {
-            if (!_isOpen) { return new CefEvent[0]; }
-
-            List<CefEvent> events = new List<CefEvent>();
-            byte[] eventBuffer = ReadBytes();
-            MemoryStream bufferStream = new MemoryStream(eventBuffer);
-
-            int bufferPos = 0;
-
-            while (bufferPos < bufferStream.Length)
-            {
-                byte[] eventID = new byte[4];
-
-                bufferPos += bufferStream.Read(eventID, bufferPos, 4);
-
-                int realEventID = BitConverter.ToInt32(eventID, 0);
-            }
-
-            return events.ToArray();
-        }
-
-        public void WriteEvent(CefEvent cefEvent)
-        {
-            if (!_isOpen) { return; }
-
-            byte[] eventBuffer = cefEvent.Serialize();
-            byte[] eventIDBuffer = new byte[4];
-
-            BitConverter.GetBytes(cefEvent.GetEventID());
-
-            WriteBytes(eventIDBuffer);
-            WriteBytes(eventBuffer);
-        }
     }
 }

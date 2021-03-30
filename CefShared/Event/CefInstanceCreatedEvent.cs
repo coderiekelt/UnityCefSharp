@@ -1,26 +1,25 @@
 ﻿using System.IO;
+using Lidgren.Network;
 
 namespace CefShared.Event
 {
     public class CefInstanceCreatedEvent : CefEvent
     {
-        public string InstanceID;
-
         public override int GetEventID()
         {
             return 1001;
         }
 
-        public override byte[] Serialize()
+        public override NetOutgoingMessage Serialize(NetOutgoingMessage message)
         {
-            WriteStringToBuffer(InstanceID);
+            message.Write(InstanceID);
 
-            return FlushBuffer();
+            return message;
         }
 
-        public override void Deserialize(MemoryStream stream)
+        public override void Deserialize(NetIncomingMessage message)
         {
-            InstanceID = ReadStringFromStream(stream);
+            InstanceID = message.ReadString();
         }
     }
 }

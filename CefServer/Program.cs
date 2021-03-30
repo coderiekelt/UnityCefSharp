@@ -5,13 +5,15 @@ using CefShared.Event;
 using CefShared.Memory;
 using CefShared;
 using CefServer.Chromium;
+using CefShared.Network;
+using System.Threading;
+using CefShared.Network.EventArgs;
 
 namespace CefServer
 {
     class Program
     {
-        private static MemoryInstance _eventInMemory;
-        private static MemoryInstance _eventOutMemory;
+        private static EventServer _eventServer;
 
         static void Main(string[] args)
         {
@@ -22,11 +24,14 @@ namespace CefServer
                 return;
             }
 
-            _eventInMemory = new MemoryInstance(args[0] + "_event_in");
-            _eventInMemory.Init(1);
+            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 
-            _eventOutMemory = new MemoryInstance(args[0] + "_event_out");
-            _eventOutMemory.Init(1);
+            EventRegistry.BuildDictionary();
+
+            _eventServer = new EventServer(Int32.Parse(args[0]));
+            _eventServer.OnEventReceived += EventReceivedHandler;
+
+            _eventServer.Start();
 
             CefSettings settings = new CefSettings();
             CefSharpSettings.ShutdownOnExit = true;
@@ -34,30 +39,35 @@ namespace CefServer
 
             while (true)
             {
-                CefEvent[] cefEvents = _eventInMemory.ReadEvents();
-
-                foreach (CefEvent cefEvent in cefEvents)
-                {
-                    Console.WriteLine("Received event " + cefEvent);
-
-                    if (cefEvent is CefCreateInstanceEvent)
-                    {
-                        CefCreateInstanceEvent createInstanceEvent = (CefCreateInstanceEvent)cefEvent;
-
-                        InstanceManager.CreateInstance(createInstanceEvent.InstanceID);
-                        CefInstance cefInstance = InstanceManager.GetInstance(createInstanceEvent.InstanceID);
-
-                        cefInstance.Width = createInstanceEvent.Width;
-                        cefInstance.Height = createInstanceEvent.Height;
-                        cefInstance.Start();
-                    }
-                }
+                Thread.Sleep(1);
             }
+        }
+
+        private static void EventReceivedHandler(object sender, EventReceivedEventArgs args)
+        {
+            CefEvent cefEvent = args.CefEvent;
+
+            if (cefEvent is CefCreateInstanceEvent)
+            {
+                CefCreateInstanceEvent createEvent = (CefCreateInstanceEvent)cefEvent;
+
+                InstanceManager.CreateInstance(createEvent.InstanceID);
+                CefInstance cefInstance = InstanceManager.GetInstance(createEvent.InstanceID);
+
+                cefInstance.Width = createEvent.Width;
+                cefInstance.Height = createEvent.Height;
+
+                cefInstance.Start();
+
+                return;
+            }
+
+            InstanceManager.GetInstance(cefEvent.InstanceID).ReceiveEvent(cefEvent);
         }
 
         public static void SendEvent(CefEvent cefEvent)
         {
-            _eventOutMemory.WriteEvent(cefEvent);
+            _eventServer.WriteEvent(cefEvent);
         }
     }
 }

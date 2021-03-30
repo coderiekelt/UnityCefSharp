@@ -1,10 +1,10 @@
 ﻿using CefClient.Chromium;
-using CefShared.Memory;
 using CefShared;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using CefShared.Event;
+using CefShared.Network;
+using CefShared.Network.EventArgs;
 
 namespace CefClient
 {
@@ -16,10 +16,9 @@ namespace CefClient
 
         private Dictionary<string, CefInstance> _cefInstances;
 
-        private MemoryInstance _eventInMemory;
-        private MemoryInstance _eventOutMemory;
+        private EventClient _eventClient;
 
-        public string InstanceID;
+        public int EventServerPort;
 
         void Awake()
         {
@@ -32,30 +31,14 @@ namespace CefClient
 
             _instance = this;
 
-            _eventInMemory = new MemoryInstance(InstanceID + "_event_in");
-            _eventInMemory.Connect();
+            EventRegistry.BuildDictionary();
 
-            _eventOutMemory = new MemoryInstance(InstanceID + "_event_out");
-            _eventOutMemory.Connect();
+            _eventClient = new EventClient(EventServerPort);
+            _eventClient.OnEventReceived += EventReceivedHandler;
+
+            _eventClient.Start();
 
             _cefInstances = new Dictionary<string, CefInstance>();
-        }
-
-        void Update()
-        {
-            CefEvent[] events = _eventOutMemory.ReadEvents();
-
-            foreach (CefEvent cefEvent in events)
-            {
-                if (cefEvent is CefInstanceCreatedEvent)
-                {
-                    CefInstanceCreatedEvent createdEvent = (CefInstanceCreatedEvent)cefEvent;
-
-                    _cefInstances[createdEvent.InstanceID].Initialize();
-
-                    continue;
-                }
-            }
         }
 
         public CefInstance CreateCefInstance(int width, int height, string url)
@@ -74,8 +57,19 @@ namespace CefClient
 
         public void SendEvent(CefEvent cefEvent)
         {
-            Debug.Log("Sending event " + cefEvent);
-            _eventInMemory.WriteEvent(cefEvent);
+            _eventClient.WriteEvent(cefEvent);
+        }
+
+        private void EventReceivedHandler(object sender, EventReceivedEventArgs args)
+        {
+            CefEvent cefEvent = args.CefEvent;
+
+            if (!_cefInstances.ContainsKey(cefEvent.InstanceID))
+            {
+                return;
+            }
+
+            _cefInstances[cefEvent.InstanceID].ReceiveEvent(cefEvent);
         }
     }
 }

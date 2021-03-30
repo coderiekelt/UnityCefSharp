@@ -8,8 +8,6 @@ namespace CefClient.Chromium
     public class CefInstance : MonoBehaviour
     {
         private MemoryInstance _gfxMemory;
-        private MemoryInstance _eventInMemory;
-        private MemoryInstance _eventOutMemory;
 
         public string InstanceID;
 
@@ -29,10 +27,6 @@ namespace CefClient.Chromium
                 return;
             }
 
-            CefEvent[] events = _eventOutMemory.ReadEvents();
-
-            // TODO: Handle events
-
             if (_viewTextureBuffer == null)
             {
                 _viewTextureBuffer = new byte[_width * _height * 4];
@@ -50,8 +44,6 @@ namespace CefClient.Chromium
 
         public void Configure(int width, int height, string url)
         {
-            Debug.Log(InstanceID + " configuring");
-
             _width = width;
             _height = height;
             _url = url;
@@ -69,24 +61,25 @@ namespace CefClient.Chromium
 
         public void Initialize()
         {
-            Debug.Log(InstanceID + " initializing");
-
             _gfxMemory = new MemoryInstance(InstanceID + "_gfx");
             _gfxMemory.Connect();
-
-            _eventInMemory = new MemoryInstance(InstanceID + "_event_in");
-            _eventInMemory.Connect();
-
-            _eventOutMemory = new MemoryInstance(InstanceID + "_event_out");
-            _eventOutMemory.Connect();
 
             IsInitialized = true;
         }
 
         public void SendEvent(CefEvent cefEvent)
         {
-            Debug.Log("Sent event " + cefEvent);
-            _eventInMemory.WriteEvent(cefEvent);
+            InstanceManager.Instance.SendEvent(cefEvent);
+        }
+
+        public void ReceiveEvent(CefEvent cefEvent)
+        {
+            if (cefEvent is CefInstanceCreatedEvent)
+            {
+                Initialize();
+
+                return;
+            }
         }
     }
 }

@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="Chromium\CefInstance.cs" />
     <Compile Include="Chromium\CefRenderHandler.cs" />
-    <Compile Include="EventDispatcher.cs" />
     <Compile Include="InstanceManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

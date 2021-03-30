@@ -6,8 +6,21 @@ using System.Threading.Tasks;
 
 namespace CefShared
 {
-    class EventRegistry
+    public static class EventRegistry
     {
-        public Dictionary<int, string> EventDictionary;
+        public static Dictionary<int, string> EventDictionary = new Dictionary<int, string>();
+
+        public static void BuildDictionary()
+        {
+            EventDictionary.Add(1000, "CefShared.Event.CefCreateInstanceEvent");
+            EventDictionary.Add(1001, "CefShared.Event.CefInstanceCreatedEvent");
+        }
+
+        public static CefEvent CreateByID(int id)
+        {
+            CefEvent cefEvent = (CefEvent) Activator.CreateInstance(Type.GetType(EventDictionary[id]));
+
+            return cefEvent;
+        }
     }
 }

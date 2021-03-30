@@ -1,11 +1,10 @@
-﻿using System.IO;
+﻿using Lidgren.Network;
+using System.IO;
 
 namespace CefShared.Event
 {
     public class CefCreateInstanceEvent : CefEvent
     {
-        public string InstanceID;
-
         public int Width;
 
         public int Height;
@@ -17,22 +16,22 @@ namespace CefShared.Event
             return 1000;
         }
 
-        public override byte[] Serialize()
+        public override NetOutgoingMessage Serialize(NetOutgoingMessage message)
         {
-            WriteStringToBuffer(InstanceID);
-            WriteInt32ToBuffer(Width);
-            WriteInt32ToBuffer(Height);
-            WriteStringToBuffer(Url);
+            message.Write(InstanceID);
+            message.Write(Width);
+            message.Write(Height);
+            message.Write(Url);
 
-            return FlushBuffer();
+            return message;
         }
 
-        public override void Deserialize(MemoryStream stream)
+        public override void Deserialize(NetIncomingMessage message)
         {
-            InstanceID = ReadStringFromStream(stream);
-            Width = ReadInt32FromStream(stream);
-            Height = ReadInt32FromStream(stream);
-            Url = ReadStringFromStream(stream);
+            InstanceID = message.ReadString();
+            Width = message.ReadInt32();
+            Height = message.ReadInt32();
+            Url = message.ReadString();
         }
     }
 }

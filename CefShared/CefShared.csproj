@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="SharedMemory, Version=2.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharedMemory.2.2.3\lib\net47\SharedMemory.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,16 +54,13 @@
     <Compile Include="Event\CefInstanceCreatedEvent.cs" />
     <Compile Include="Event\CefNavigateEvent.cs" />
     <Compile Include="Memory\MemoryInstance.cs" />
+    <Compile Include="Network\EventArgs\EventReceivedEventArgs.cs" />
+    <Compile Include="Network\EventClient.cs" />
+    <Compile Include="Network\EventServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SharedMemory\SharedMemory.csproj">
-      <Project>{e2c5a300-1866-43a4-96e3-f38dd5563cd6}</Project>
-      <Name>SharedMemory</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
