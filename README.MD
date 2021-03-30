@@ -28,4 +28,4 @@ Launch the solution, and wait for the NuGet packages to install.
 Simply click "Build Solution" and enjoy!
 
 ## Getting started
-See [Getting Started][https://github.com/coderiekelt/UnityCefSharp/wiki/Getting-started]
+See [Getting Started](https://github.com/coderiekelt/UnityCefSharp/wiki/Getting-started)
