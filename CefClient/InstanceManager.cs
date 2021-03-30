@@ -4,6 +4,7 @@ using CefShared;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using CefShared.Event;
 
 namespace CefClient
 {
@@ -38,13 +39,32 @@ namespace CefClient
             _cefInstances = new Dictionary<string, CefInstance>();
         }
 
-        public CefInstance CreateCefInstance()
+        void Update()
+        {
+            CefEvent[] events = _eventOutMemory.ReadEvents();
+
+            foreach (CefEvent cefEvent in events)
+            {
+                if (cefEvent is CefInstanceCreatedEvent)
+                {
+                    CefInstanceCreatedEvent createdEvent = (CefInstanceCreatedEvent)cefEvent;
+
+                    _cefInstances[createdEvent.InstanceID].Initialize();
+
+                    continue;
+                }
+            }
+        }
+
+        public CefInstance CreateCefInstance(int width, int height, string url)
         {
             CefInstance instance = new CefInstance(Guid.NewGuid().ToString());
             _cefInstances[instance.InstanceID] = instance;
 
             instance.name = instance.InstanceID;
             instance.transform.parent = transform;
+
+            instance.Configure(width, height, url);
 
             return instance;
         }

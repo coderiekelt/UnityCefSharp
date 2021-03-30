@@ -18,3 +18,45 @@ Contains shared classes, such as events and interprocess memory management.
 ### CefClient
 Contains everything you need to implement this within Unity.
 
+## Sample usage
+Copy all files from `CefClient/bin` to `Plugins` in your Unity project.
+
+You can use the following `MonoBehaviour` scripts as a sample:
+
+**Initializing the Instance Manager**
+```cs
+using UnityEngine;
+
+public class ChromiumManager : CefClient.InstanceManager
+{
+    public ChromiumManager() : base()
+    {
+        
+    }
+}
+```
+
+**Rendering to GUI**
+```cs
+using CefClient.Chromium;
+using UnityEngine;
+
+public class ChromiumGUI : MonoBehaviour
+{
+    public CefInstance CefInstance;
+
+    void Start()
+    {
+        CefInstance = ChromiumManager.Instance.CreateCefInstance(1920, 1080, "https://www.google.com/");
+    }
+
+    void OnGUI()
+    {
+        if (CefInstance.ViewTexture == null) {
+            return;
+        }
+
+        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), CefInstance.ViewTexture);
+    }
+}
+```

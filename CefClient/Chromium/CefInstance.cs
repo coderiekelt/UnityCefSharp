@@ -24,15 +24,6 @@ namespace CefClient.Chromium
 
         public CefInstance(string instanceID)
         {
-            _gfxMemory = new MemoryInstance(instanceID + "_gfx");
-            _gfxMemory.Connect();
-
-            _eventInMemory = new MemoryInstance(instanceID + "_event_in");
-            _eventInMemory.Connect();
-
-            _eventOutMemory = new MemoryInstance(instanceID + "_event_out");
-            _eventOutMemory.Connect();
-
             InstanceID = instanceID;
         }
 
@@ -77,6 +68,20 @@ namespace CefClient.Chromium
             };
 
             InstanceManager.Instance.SendEvent(createEvent);
+        }
+
+        public void Initialize()
+        {
+            _gfxMemory = new MemoryInstance(InstanceID + "_gfx");
+            _gfxMemory.Connect();
+
+            _eventInMemory = new MemoryInstance(InstanceID + "_event_in");
+            _eventInMemory.Connect();
+
+            _eventOutMemory = new MemoryInstance(InstanceID + "_event_out");
+            _eventOutMemory.Connect();
+
+            IsInitialized = true;
         }
 
         public void SendEvent(CefEvent cefEvent)
