@@ -27,5 +27,15 @@ Launch the solution, and wait for the NuGet packages to install.
 
 Simply click "Build Solution" and enjoy!
 
+## Best practices
+It's important to remember that in Unity, anything happening related to Unity objects needs to happen in the main thread.
+This means that all rendering from Chromium also takes place in the main thread.
+
+If there is someone smarter than me out there that can implement a shared texture resource (with e.g. the native pointer of a texture) feel free to let me know!
+
+Until that happens, be mindful of using this in your project. During my tests it takes around 2 to 4ms to generate a single frame from Chromium on a resolution 2162x814 (in editor.)
+
+I recommend only using this for your main GUI, but hey I'm just a README.MD not a cop so do what you want.
+
 ## Getting started
 See [Getting Started](https://github.com/coderiekelt/UnityCefSharp/wiki/Getting-started)
