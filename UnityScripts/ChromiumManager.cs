@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using UnityEngine;
 public class ChromiumManager : MonoBehaviour
@@ -10,14 +11,14 @@ public class ChromiumManager : MonoBehaviour
 
     void Awake()
     {
-        string cefServerPath;
+        string cefServerPath = null;
 
         #if UNITY_EDITOR
             cefServerPath = Application.dataPath + @"\..\CefServer";
         #endif
 
         if (cefServerPath == null) {
-            cefServerPath = System.Reflection.Assembly.GetExecutingAssembly().Location + @"\..\..\CefServer";
+            cefServerPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\..\..\CefServer";
         }
 
         _process = new Process()
