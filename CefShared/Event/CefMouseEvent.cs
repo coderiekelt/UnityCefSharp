@@ -13,6 +13,10 @@ namespace CefShared.Event
 
         public int MouseY;
 
+        public int ScollDeltaX = 0;
+
+        public int ScollDeltaY = 0;
+
         public override int GetEventID()
         {
             return 2001;
@@ -25,6 +29,8 @@ namespace CefShared.Event
             message.Write(MouseButtonDown);
             message.Write(MouseX);
             message.Write(MouseY);
+            message.Write(ScollDeltaX);
+            message.Write(ScollDeltaY);
 
             return message;
         }
@@ -36,6 +42,8 @@ namespace CefShared.Event
             MouseButtonDown = message.ReadBoolean();
             MouseX = message.ReadInt32();
             MouseY = message.ReadInt32();
+            ScollDeltaX = message.ReadInt32();
+            ScollDeltaY = message.ReadInt32();
         }
     }
 }

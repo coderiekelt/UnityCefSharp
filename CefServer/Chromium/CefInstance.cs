@@ -50,6 +50,7 @@ namespace CefServer.Chromium
             if (cefEvent is CefMouseEvent)
             {
                 CefMouseEvent cefMouseEvent = (CefMouseEvent)cefEvent;
+                MouseEvent mouseEvent = new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, CefEventFlags.None);
 
                 if (cefMouseEvent.MouseButton != -1)
                 {
@@ -71,12 +72,20 @@ namespace CefServer.Chromium
                             break;
                     }
 
-                    _browser.GetBrowser().GetHost().SendMouseClickEvent(new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, CefEventFlags.None), pressedButton, !cefMouseEvent.MouseButtonDown, 1);
+                    _browser.GetBrowser().GetHost().SendMouseClickEvent(mouseEvent, pressedButton, !cefMouseEvent.MouseButtonDown, 1);
+                }
 
+                if (cefMouseEvent.ScollDeltaX != 0 || cefMouseEvent.ScollDeltaY != 0)
+                {
+                    _browser.GetBrowser().GetHost().SendMouseWheelEvent(mouseEvent, cefMouseEvent.ScollDeltaX * 100, cefMouseEvent.ScollDeltaY * 100);
+                }
+
+                if (cefMouseEvent.MouseButton != -1)
+                {
                     return;
                 }
 
-                _browser.GetBrowser().GetHost().SendMouseMoveEvent(new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, CefEventFlags.None), false);
+                _browser.GetBrowser().GetHost().SendMouseMoveEvent(mouseEvent, false);
 
                 return;
             }
@@ -94,8 +103,6 @@ namespace CefServer.Chromium
                     Modifiers = cefKeyboardEvent.Shift ? CefEventFlags.ShiftDown : CefEventFlags.None,
                     IsSystemKey = false
                 };
-
-                Console.WriteLine("Sending key {0} | Type: {1} | {2} | {3}", keyEvent.WindowsKeyCode, keyEvent.Type, cefKeyboardEvent.IsChar, cefKeyboardEvent.Shift);
 
                 _browser.GetBrowser().GetHost().SendKeyEvent(keyEvent);
 
