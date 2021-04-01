@@ -13,6 +13,7 @@ namespace CefClient.Chromium
 
         public string InstanceID;
         public int TargetFPS = 24;
+        public bool ApplyMipMaps = true;
 
         private int _width;
         private int _height;
@@ -44,11 +45,9 @@ namespace CefClient.Chromium
 
                 _viewTextureArray = ViewTexture.GetRawTextureData<byte>();
                 _renderThread.Start();
-
-                Debug.Log("Starting render thread");
             }
 
-            ViewTexture.Apply(true);
+            ViewTexture.Apply(ApplyMipMaps);
         }
 
         void OnDestroy()

@@ -37,7 +37,7 @@ If there is someone smarter than me out there that can implement a shared textur
 
 Until that happens, be mindful of using this in your project. During my tests it takes around 3 to 5ms to generate a single frame (full stop, since the last update) on a resolution 2162x814 (in editor.)
 
-I recommend only using this for your main GUI, but hey I'm just a README.MD not a cop so do what you want.
+See [Performance](https://github.com/coderiekelt/UnityCefSharp/wiki/Performance) for more information.
 
 ## Getting started
 See [Getting Started](https://github.com/coderiekelt/UnityCefSharp/wiki/Getting-started)
