@@ -17,8 +17,6 @@ namespace CefServer.Chromium
         public string InstanceID;
 
         private MemoryInstance _gfxMemory;
-        private MemoryInstance _eventInMemory;
-        private MemoryInstance _eventOutMemory;
 
         public int Width;
         public int Height;
@@ -85,7 +83,22 @@ namespace CefServer.Chromium
             {
                 CefKeyboardEvent cefKeyboardEvent = (CefKeyboardEvent)cefEvent;
 
+                int keyCode = KeyConverter.StringToKeycode(cefKeyboardEvent.Key);
+
+                Console.WriteLine("Keycode: " + keyCode);
+
+                if (keyCode == -1) { return; } // Sorry, won't handle for now
+
                 // handle
+                KeyEvent keyEvent = new KeyEvent()
+                {
+                    WindowsKeyCode = keyCode,
+                    FocusOnEditableField = true,
+                    Modifiers = cefKeyboardEvent.Shift ? CefEventFlags.ShiftDown : CefEventFlags.None,
+                    IsSystemKey = false
+                };
+
+                _browser.GetBrowser().GetHost().SendKeyEvent(keyEvent);
 
                 return;
             }
@@ -95,12 +108,6 @@ namespace CefServer.Chromium
         {
             _gfxMemory = new MemoryInstance(InstanceID + "_gfx");
             _gfxMemory.Init(Width * Height * 4);
-
-            _eventInMemory = new MemoryInstance(InstanceID + "_event_in");
-            _eventInMemory.Init(1);
-
-            _eventOutMemory = new MemoryInstance(InstanceID + "_event_out");
-            _eventOutMemory.Init(1);
 
             _browser = new ChromiumWebBrowser();
             _renderHandler = new CefRenderHandler(_gfxMemory, Width, Height);

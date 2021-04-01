@@ -5,7 +5,11 @@ namespace CefShared.Event
 {
     public class CefKeyboardEvent : CefEvent
     {
-        public string InputString;
+        public string Key;
+
+        public bool Shift = false;
+
+        public bool AltGr = false;
 
         public override int GetEventID()
         {
@@ -15,7 +19,9 @@ namespace CefShared.Event
         public override NetOutgoingMessage Serialize(NetOutgoingMessage message)
         {
             message.Write(InstanceID);
-            message.Write(InputString);
+            message.Write(Key);
+            message.Write(Shift);
+            message.Write(AltGr);
 
             return message;
         }
@@ -23,7 +29,9 @@ namespace CefShared.Event
         public override void Deserialize(NetIncomingMessage message)
         {
             InstanceID = message.ReadString();
-            InputString = message.ReadString();
+            Key = message.ReadString();
+            Shift = message.ReadBoolean();
+            AltGr = message.ReadBoolean();
         }
     }
 }
