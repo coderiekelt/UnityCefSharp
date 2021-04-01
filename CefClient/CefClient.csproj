@@ -48,6 +48,8 @@
     <Compile Include="Chromium\CefInstance.cs" />
     <Compile Include="Chromium\CefKeys.cs" />
     <Compile Include="InstanceManager.cs" />
+    <Compile Include="Javascript\EventArgs\JSCallbackEventArgs.cs" />
+    <Compile Include="Javascript\JSCallback.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

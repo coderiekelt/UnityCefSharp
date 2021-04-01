@@ -17,6 +17,8 @@ namespace CefShared
             EventDictionary.Add(1001, "CefShared.Event.CefInstanceCreatedEvent");
             EventDictionary.Add(2000, "CefShared.Event.CefKeyboardEvent");
             EventDictionary.Add(2001, "CefShared.Event.CefMouseEvent");
+            EventDictionary.Add(3000, "CefShared.Event.CefEvalJavascriptEvent");
+            EventDictionary.Add(3001, "CefShared.Event.CefJavascriptResultEvent");
         }
 
         public static CefEvent CreateByID(int id)

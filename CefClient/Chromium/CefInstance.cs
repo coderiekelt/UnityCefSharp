@@ -4,6 +4,8 @@ using CefShared.Memory;
 using UnityEngine;
 using System.Threading;
 using Unity.Collections;
+using System.Collections.Generic;
+using System;
 
 namespace CefClient.Chromium
 {
@@ -23,11 +25,14 @@ namespace CefClient.Chromium
         private NativeArray<byte> _viewTextureArray;
         private Thread _renderThread;
 
+        private Dictionary<string, Action<string>> _jsCallbacks;
+
         public Texture2D ViewTexture;
         public bool IsInitialized { get; private set; }
 
         void Awake()
         {
+            _jsCallbacks = new Dictionary<string, Action<string>>();
             _renderThread = new Thread(RenderThread);
         }
 
@@ -71,7 +76,7 @@ namespace CefClient.Chromium
                 InstanceID = InstanceID
             };
 
-            InstanceManager.Instance.SendEvent(createEvent);
+           SendEvent(createEvent);
         }
 
         public void Initialize()
@@ -95,6 +100,42 @@ namespace CefClient.Chromium
 
                 return;
             }
+
+            if (cefEvent is CefJavascriptResultEvent)
+            {
+                CefJavascriptResultEvent javascriptEvent = (CefJavascriptResultEvent)cefEvent;
+
+                _jsCallbacks[javascriptEvent.CallbackID](javascriptEvent.Result);
+                _jsCallbacks.Remove(javascriptEvent.CallbackID);
+
+                return;
+            }
+        }
+
+        public void Eval(string javascript)
+        {
+            CefEvalJavascriptEvent javascriptEvent = new CefEvalJavascriptEvent()
+            {
+                InstanceID = InstanceID,
+                Javascript = javascript,
+            };
+
+            SendEvent(javascriptEvent);
+        }
+
+        public void EvalCallback(string javascript, Action<string> callback)
+        {
+            string callbackId = Guid.NewGuid().ToString();
+            _jsCallbacks[callbackId] = callback;
+
+            CefEvalJavascriptEvent cefEvent = new CefEvalJavascriptEvent
+            {
+                InstanceID = InstanceID,
+                CallbackID = callbackId,
+                Javascript = javascript,
+            };
+
+            SendEvent(cefEvent);
         }
 
         private void RenderThread()

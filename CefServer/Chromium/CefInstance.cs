@@ -7,6 +7,7 @@ using CefShared.Memory;
 using CefShared.Event;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CefServer.Chromium
 {
@@ -47,6 +48,8 @@ namespace CefServer.Chromium
 
         public void ReceiveEvent(CefEvent cefEvent)
         {
+            #region Handle mouse event
+
             if (cefEvent is CefMouseEvent)
             {
                 CefMouseEvent cefMouseEvent = (CefMouseEvent)cefEvent;
@@ -90,6 +93,10 @@ namespace CefServer.Chromium
                 return;
             }
 
+            #endregion
+
+            #region Handle keyboard event
+
             if (cefEvent is CefKeyboardEvent)
             {
                 CefKeyboardEvent cefKeyboardEvent = (CefKeyboardEvent)cefEvent;
@@ -108,6 +115,41 @@ namespace CefServer.Chromium
 
                 return;
             }
+
+            #endregion
+
+            #region Handle javascript event
+
+            if (cefEvent is CefEvalJavascriptEvent)
+            {
+                CefEvalJavascriptEvent javascriptEvent = (CefEvalJavascriptEvent)cefEvent;
+
+                if (javascriptEvent.CallbackID.Length > 0)
+                {
+                    Task<JavascriptResponse> task = _browser.EvaluateScriptAsync(javascriptEvent.Javascript);
+                    task.ContinueWith(result => SendCallback(javascriptEvent, result.Result.Result.ToString()));
+
+                    return;
+                }
+
+                _browser.EvaluateScriptAsync(javascriptEvent.Javascript);
+
+                return;
+            }
+
+            #endregion
+        }
+
+        private void SendCallback(CefEvalJavascriptEvent evalEvent, string result)
+        {
+            CefJavascriptResultEvent resultEvent = new CefJavascriptResultEvent()
+            {
+                InstanceID = InstanceID,
+                CallbackID = evalEvent.CallbackID,
+                Result = result,
+            };
+
+            Program.SendEvent(resultEvent);
         }
 
         private void Run()
@@ -121,7 +163,6 @@ namespace CefServer.Chromium
             _browser.RenderHandler = _renderHandler;
 
             _browser.BrowserInitialized += BrowserInitialized;
-            _browser.AddressChanged += ResetViewport;
         }
 
         private void BrowserInitialized(object sender, EventArgs e)
@@ -131,10 +172,7 @@ namespace CefServer.Chromium
             Program.SendEvent(new CefInstanceCreatedEvent() { InstanceID = InstanceID });
         }
 
-        private void ResetViewport(object sender, EventArgs e)
-        {
-            _renderHandler.ResetViewport();
-        }
+        #region Keyboard helpers
 
         [DllImport("user32.dll")]
         public static extern int ToUnicode(uint virtualKeyCode, uint scanCode,
@@ -155,5 +193,7 @@ namespace CefServer.Chromium
             ToUnicode((uint)keys, 0, keyboardState, buf, 256, 0);
             return buf.ToString();
         }
+
+        #endregion
     }
 }

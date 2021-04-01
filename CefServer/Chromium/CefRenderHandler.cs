@@ -75,12 +75,6 @@ namespace CefServer.Chromium
             GfxMemory.WriteBytes(internalBuffer);
         }
 
-        public void ResetViewport()
-        {
-            ViewX = 0;
-            ViewY = 0;
-        }
-
         public void OnPopupShow(bool show)
         {
             

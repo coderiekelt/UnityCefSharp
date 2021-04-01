@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="CefEvent.cs" />
     <Compile Include="EventRegistry.cs" />
+    <Compile Include="Event\CefJavascriptResultEvent.cs" />
+    <Compile Include="Event\CefEvalJavascriptEvent.cs" />
     <Compile Include="Event\CefCreateInstanceEvent.cs" />
     <Compile Include="Event\CefMouseEvent.cs" />
     <Compile Include="Event\CefKeyboardEvent.cs" />
