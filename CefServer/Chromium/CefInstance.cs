@@ -16,6 +16,7 @@ namespace CefServer.Chromium
         private Thread _thread;
         private ChromiumWebBrowser _browser;
         private CefRenderHandler _renderHandler;
+        private CefStaticBinding _staticBinding;
 
         public string InstanceID;
 
@@ -40,7 +41,7 @@ namespace CefServer.Chromium
         public string Start()
         {
             Console.WriteLine("Starting instance {0}", InstanceID);
-
+            _staticBinding = new CefStaticBinding(this);
             _thread.Start();
 
             return InstanceID;
@@ -138,6 +139,17 @@ namespace CefServer.Chromium
             }
 
             #endregion
+
+            #region Handle static call result event
+
+            if (cefEvent is CefJavascriptResultEvent)
+            {
+                _staticBinding.HandleEvent((CefJavascriptResultEvent)cefEvent);
+
+                return;
+            }
+
+            #endregion
         }
 
         private void SendCallback(CefEvalJavascriptEvent evalEvent, string result)
@@ -163,13 +175,21 @@ namespace CefServer.Chromium
             _browser.RenderHandler = _renderHandler;
 
             _browser.BrowserInitialized += BrowserInitialized;
+            _browser.LoadingStateChanged += RegisterStaticBindings;
         }
 
         private void BrowserInitialized(object sender, EventArgs e)
         {
+            _browser.JavascriptObjectRepository.Register("staticInvoker", _staticBinding, true);
             _browser.Load(Url);
             Console.WriteLine("Initialized instance {0}", InstanceID);
             Program.SendEvent(new CefInstanceCreatedEvent() { InstanceID = InstanceID });
+        }
+
+        private void RegisterStaticBindings(object sender, EventArgs e)
+        {
+            if (_browser.JavascriptObjectRepository.IsBound("staticInvoker")) { return;  }
+            _browser.JavascriptObjectRepository.Register("staticInvoker", _staticBinding, true);
         }
 
         #region Keyboard helpers

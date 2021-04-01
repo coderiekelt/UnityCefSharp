@@ -48,11 +48,8 @@
     <Compile Include="Chromium\CefInstance.cs" />
     <Compile Include="Chromium\CefKeys.cs" />
     <Compile Include="InstanceManager.cs" />
-    <Compile Include="Javascript\EventArgs\JSCallbackEventArgs.cs" />
-    <Compile Include="Javascript\JSCallback.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\CefShared\CefShared.csproj">
       <Project>{11a19bb9-a0af-4f2a-ab52-34c678b232f7}</Project>

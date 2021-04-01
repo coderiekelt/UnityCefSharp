@@ -35,6 +35,9 @@
     <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SharedMemory, Version=2.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharedMemory.2.2.3\lib\net47\SharedMemory.dll</HintPath>
     </Reference>
@@ -50,6 +53,7 @@
   <ItemGroup>
     <Compile Include="CefEvent.cs" />
     <Compile Include="EventRegistry.cs" />
+    <Compile Include="Event\CefJavascriptStaticCallEvent.cs" />
     <Compile Include="Event\CefJavascriptResultEvent.cs" />
     <Compile Include="Event\CefEvalJavascriptEvent.cs" />
     <Compile Include="Event\CefCreateInstanceEvent.cs" />

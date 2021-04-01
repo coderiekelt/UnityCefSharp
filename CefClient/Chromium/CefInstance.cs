@@ -6,6 +6,7 @@ using System.Threading;
 using Unity.Collections;
 using System.Collections.Generic;
 using System;
+using System.Reflection;
 
 namespace CefClient.Chromium
 {
@@ -32,6 +33,8 @@ namespace CefClient.Chromium
 
         void Awake()
         {
+            Debug.Log(System.Reflection.Assembly.GetExecutingAssembly());
+
             _jsCallbacks = new Dictionary<string, Action<string>>();
             _renderThread = new Thread(RenderThread);
         }
@@ -110,6 +113,25 @@ namespace CefClient.Chromium
 
                 return;
             }
+
+            if (cefEvent is CefJavascriptStaticCallEvent)
+            {
+                CefJavascriptStaticCallEvent staticCallEvent = (CefJavascriptStaticCallEvent)cefEvent;
+
+                try
+                {
+                    string result = (string) GetType(staticCallEvent.Namespace).GetMethod(staticCallEvent.Method).Invoke(this, staticCallEvent.Arguments);
+
+                    RespondToStaticCall(staticCallEvent, result);
+                } catch (Exception e) {
+                    Debug.LogError(e.Message);
+                    Debug.LogError(e.StackTrace);
+
+                    RespondToStaticCall(staticCallEvent, "error");
+                }
+
+                return;
+            }
         }
 
         public void Eval(string javascript)
@@ -148,5 +170,65 @@ namespace CefClient.Chromium
                 Thread.Sleep(1000 / TargetFPS); // We'll try...
             }
         }
+
+        private void RespondToStaticCall(CefJavascriptStaticCallEvent cefEvent, string response)
+        {
+            SendEvent(new CefJavascriptResultEvent()
+            {
+                InstanceID = InstanceID,
+                CallbackID = cefEvent.CallbackID,
+                Result = response,
+            });
+        }
+
+        #region Reflection helpers
+        public static Type GetType(string TypeName)
+        {
+
+            // Try Type.GetType() first. This will work with types defined
+            // by the Mono runtime, in the same assembly as the caller, etc.
+            var type = Type.GetType(TypeName);
+
+            // If it worked, then we're done here
+            if (type != null)
+                return type;
+
+            // If the TypeName is a full name, then we can try loading the defining assembly directly
+            if (TypeName.Contains("."))
+            {
+
+                // Get the name of the assembly (Assumption is that we are using 
+                // fully-qualified type names)
+                var assemblyName = TypeName.Substring(0, TypeName.IndexOf('.'));
+
+                // Attempt to load the indicated Assembly
+                var assembly = Assembly.Load(assemblyName);
+                if (assembly == null)
+                    return null;
+
+                // Ask that assembly to return the proper Type
+                type = assembly.GetType(TypeName);
+                if (type != null)
+                    return type;
+
+            }
+
+            // If we still haven't found the proper type, we can enumerate all of the 
+            // loaded assemblies and see if any of them define the type
+            var currentAssembly = Assembly.GetExecutingAssembly();
+            var referencedAssemblies = System.AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in referencedAssemblies)
+            {
+                type = assembly.GetType(TypeName);
+                if (type != null)
+                    return type;
+            }
+
+            // The type just couldn't be found...
+            return null;
+
+        }
+
+        #endregion
     }
 }

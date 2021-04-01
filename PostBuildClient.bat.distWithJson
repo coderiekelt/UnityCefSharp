@@ -7,4 +7,3 @@ echo "%targetDir%"
 
 xcopy "%1*.dll" "%targetDir%" /q /y
 del %targetDir%UnityEngine.dll
-del %targetDir%Newtonsoft.Json.dll
