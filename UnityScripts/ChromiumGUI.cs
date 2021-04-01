@@ -137,8 +137,6 @@ public class ChromiumGUI : MonoBehaviour
                         Key = vcode
                     };
 
-                    Debug.Log("key event " + ev.keyCode + " " + ev.type + " is char? " + isChar + " shift? " + cefKeyboardEvent.Shift);
-
                     InstanceManager.Instance.SendEvent(cefKeyboardEvent);
                 }
             }
