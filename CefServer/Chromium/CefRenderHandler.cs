@@ -17,6 +17,9 @@ namespace CefServer.Chromium
         public int Width;
         public int Height;
 
+        public int ViewX;
+        public int ViewY;
+
         public MemoryInstance GfxMemory;
 
         public CefRenderHandler(MemoryInstance gfxMemory, int width, int height)
@@ -38,15 +41,15 @@ namespace CefServer.Chromium
 
         public bool GetScreenPoint(int viewX, int viewY, out int screenX, out int screenY)
         {
-            screenX = 0;
-            screenY = 0;
+            screenX = ViewX;
+            screenY = ViewY;
 
             return true;
         }
 
         public Rect GetViewRect()
         {
-            return new Rect(0, 0, Width, Height);
+            return new Rect(ViewX, ViewY, Width, Height);
         }
 
         public void OnAcceleratedPaint(PaintElementType type, Rect dirtyRect, IntPtr sharedHandle)
@@ -70,6 +73,12 @@ namespace CefServer.Chromium
             Marshal.Copy(buffer, internalBuffer, 0, internalBuffer.Length);
 
             GfxMemory.WriteBytes(internalBuffer);
+        }
+
+        public void ResetViewport()
+        {
+            ViewX = 0;
+            ViewY = 0;
         }
 
         public void OnPopupShow(bool show)

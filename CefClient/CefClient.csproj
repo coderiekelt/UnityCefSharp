@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chromium\CefInstance.cs" />
+    <Compile Include="Chromium\CefKeys.cs" />
     <Compile Include="InstanceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

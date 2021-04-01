@@ -61,7 +61,6 @@
     <Compile Include="Chromium\CefInstance.cs" />
     <Compile Include="Chromium\CefRenderHandler.cs" />
     <Compile Include="InstanceManager.cs" />
-    <Compile Include="KeyConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

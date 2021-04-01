@@ -5,6 +5,8 @@ using CefSharp.OffScreen;
 using CefShared;
 using CefShared.Memory;
 using CefShared.Event;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace CefServer.Chromium
 {
@@ -83,20 +85,17 @@ namespace CefServer.Chromium
             {
                 CefKeyboardEvent cefKeyboardEvent = (CefKeyboardEvent)cefEvent;
 
-                int keyCode = KeyConverter.StringToKeycode(cefKeyboardEvent.Key);
-
-                Console.WriteLine("Keycode: " + keyCode);
-
-                if (keyCode == -1) { return; } // Sorry, won't handle for now
-
                 // handle
                 KeyEvent keyEvent = new KeyEvent()
                 {
-                    WindowsKeyCode = keyCode,
+                    Type = cefKeyboardEvent.IsChar ? KeyEventType.Char : (cefKeyboardEvent.IsDown ? KeyEventType.KeyDown : KeyEventType.KeyUp),
+                    WindowsKeyCode = cefKeyboardEvent.IsChar ? GetCharsFromKeys(cefKeyboardEvent.Key, cefKeyboardEvent.Shift)[0] : cefKeyboardEvent.Key,
                     FocusOnEditableField = true,
                     Modifiers = cefKeyboardEvent.Shift ? CefEventFlags.ShiftDown : CefEventFlags.None,
                     IsSystemKey = false
                 };
+
+                Console.WriteLine("Sending key {0} | Type: {1} | {2} | {3}", keyEvent.WindowsKeyCode, keyEvent.Type, cefKeyboardEvent.IsChar, cefKeyboardEvent.Shift);
 
                 _browser.GetBrowser().GetHost().SendKeyEvent(keyEvent);
 
@@ -115,6 +114,7 @@ namespace CefServer.Chromium
             _browser.RenderHandler = _renderHandler;
 
             _browser.BrowserInitialized += BrowserInitialized;
+            _browser.AddressChanged += ResetViewport;
         }
 
         private void BrowserInitialized(object sender, EventArgs e)
@@ -122,6 +122,31 @@ namespace CefServer.Chromium
             _browser.Load(Url);
             Console.WriteLine("Initialized instance {0}", InstanceID);
             Program.SendEvent(new CefInstanceCreatedEvent() { InstanceID = InstanceID });
+        }
+
+        private void ResetViewport(object sender, EventArgs e)
+        {
+            _renderHandler.ResetViewport();
+        }
+
+        [DllImport("user32.dll")]
+        public static extern int ToUnicode(uint virtualKeyCode, uint scanCode,
+            byte[] keyboardState,
+            [Out, MarshalAs(UnmanagedType.LPWStr, SizeConst = 64)]
+            StringBuilder receivingBuffer,
+            int bufferSize, uint flags);
+
+        /// <summary>
+        /// https://stackoverflow.com/a/6949520/450141
+        /// </summary>
+        public static string GetCharsFromKeys(int keys, bool shift)
+        {
+            var buf = new StringBuilder(256);
+            var keyboardState = new byte[256];
+            if (shift)
+                keyboardState[16] = 0xff;
+            ToUnicode((uint)keys, 0, keyboardState, buf, 256, 0);
+            return buf.ToString();
         }
     }
 }
