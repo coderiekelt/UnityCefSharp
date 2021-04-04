@@ -2,9 +2,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using UnityEngine;
+
 public class ChromiumManager : MonoBehaviour
 {
     public int EventServerPort = 9002;
+
+    public bool UseInternalProcess = true;
 
     private Process _process;
     private bool _running = false;
@@ -12,6 +15,16 @@ public class ChromiumManager : MonoBehaviour
     void Awake()
     {
         string cefServerPath = null;
+
+        if (!UseInternalProcess) {
+            CefClient.InstanceManager instanceManager = gameObject.AddComponent<CefClient.InstanceManager>();
+            instanceManager.EventServerPort = EventServerPort;
+
+            instanceManager.Initialize();
+            DontDestroyOnLoad(instanceManager);
+
+            return;
+        }
 
         #if UNITY_EDITOR
             cefServerPath = Application.dataPath + @"\..\CefServer";
@@ -21,6 +34,7 @@ public class ChromiumManager : MonoBehaviour
             cefServerPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\..\..\CefServer";
         }
 
+        
         _process = new Process()
         {
             StartInfo = new ProcessStartInfo()
@@ -34,13 +48,14 @@ public class ChromiumManager : MonoBehaviour
         };
 
         if (_process.Start()) {
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
 
             _running = true;
             CefClient.InstanceManager instanceManager = gameObject.AddComponent<CefClient.InstanceManager>();
             instanceManager.EventServerPort = EventServerPort;
 
             instanceManager.Initialize();
+            DontDestroyOnLoad(instanceManager);
         }
     }
 
