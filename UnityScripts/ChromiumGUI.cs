@@ -36,7 +36,7 @@ public class ChromiumGUI : MonoBehaviour
     {
         if (InstanceManager.Instance == null) { return; }
 
-        if (!_initialized) {
+        if (!_initialized && InstanceManager.Instance.IsReady()) {
             CefInstance = InstanceManager.Instance.CreateCefInstance(Screen.width, Screen.height, URL);
             _initialized = true;
         }

@@ -41,6 +41,11 @@ namespace CefClient
             _cefInstances = new Dictionary<string, CefInstance>();
         }
 
+        public bool IsReady()
+        {
+            return _eventClient.IsReady();
+        }
+
         public CefInstance CreateCefInstance(int width, int height, string url)
         {
             CefInstance instance = gameObject.AddComponent<CefInstance>();
@@ -57,6 +62,11 @@ namespace CefClient
 
         public void SendEvent(CefEvent cefEvent)
         {
+            if (!_eventClient.IsReady())
+            {
+                Debug.LogWarning("Attempted to send an event whilst event client is not connected.");
+            }
+
             _eventClient.WriteEvent(cefEvent);
         }
 

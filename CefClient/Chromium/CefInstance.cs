@@ -33,8 +33,6 @@ namespace CefClient.Chromium
 
         void Awake()
         {
-            Debug.Log(System.Reflection.Assembly.GetExecutingAssembly());
-
             _jsCallbacks = new Dictionary<string, Action<string>>();
             _renderThread = new Thread(RenderThread);
         }
@@ -53,9 +51,13 @@ namespace CefClient.Chromium
 
                 _viewTextureArray = ViewTexture.GetRawTextureData<byte>();
                 _renderThread.Start();
+
+                Debug.Log("Started rendering thread");
             }
 
             ViewTexture.Apply(ApplyMipMaps);
+
+            Debug.Log("Applying textures");
         }
 
         void OnDestroy()
@@ -88,6 +90,8 @@ namespace CefClient.Chromium
             _gfxMemory.Connect();
 
             IsInitialized = true;
+
+            Debug.Log("Initialized");
         }
 
         public void SendEvent(CefEvent cefEvent)

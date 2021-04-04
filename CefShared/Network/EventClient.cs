@@ -24,6 +24,11 @@ namespace CefShared.Network
             _thread = new Thread(ThreadStart);
         }
 
+        public bool IsReady()
+        {
+            return _netClient.ConnectionStatus == NetConnectionStatus.Connected;
+        }
+
         public void WriteEvent(CefEvent cefEvent)
         {
             NetOutgoingMessage message = _netClient.CreateMessage();

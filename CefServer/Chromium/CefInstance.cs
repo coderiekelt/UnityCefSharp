@@ -54,7 +54,8 @@ namespace CefServer.Chromium
             if (cefEvent is CefMouseEvent)
             {
                 CefMouseEvent cefMouseEvent = (CefMouseEvent)cefEvent;
-                MouseEvent mouseEvent = new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, CefEventFlags.None);
+                MouseEvent mouseEvent;
+                CefEventFlags mouseEventFlags = CefEventFlags.None;
 
                 if (cefMouseEvent.MouseButton != -1)
                 {
@@ -64,20 +65,28 @@ namespace CefServer.Chromium
                     {
                         case 0:
                             pressedButton = MouseButtonType.Left;
+                            mouseEventFlags = CefEventFlags.LeftMouseButton;
                             break;
                         case 1:
                             pressedButton = MouseButtonType.Right;
+                            mouseEventFlags = CefEventFlags.RightMouseButton;
                             break;
                         case 2:
                             pressedButton = MouseButtonType.Middle;
+                            mouseEventFlags = CefEventFlags.MiddleMouseButton;
                             break;
                         default:
                             pressedButton = MouseButtonType.Left;
+                            mouseEventFlags = CefEventFlags.LeftMouseButton;
                             break;
                     }
 
+                    mouseEvent = new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, mouseEventFlags);
+
                     _browser.GetBrowser().GetHost().SendMouseClickEvent(mouseEvent, pressedButton, !cefMouseEvent.MouseButtonDown, 1);
                 }
+
+                mouseEvent = new MouseEvent(cefMouseEvent.MouseX, cefMouseEvent.MouseY, mouseEventFlags);
 
                 if (cefMouseEvent.ScollDeltaX != 0 || cefMouseEvent.ScollDeltaY != 0)
                 {
